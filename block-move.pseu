@@ -1,0 +1,11 @@
+To check for legality block slide (dr, dc) of block b:
+    for each rel coordinate r0 in b:
+        a0 <- r0 + posn of b + (dr, dc)
+	if a0 is out of bounds:
+	    return false
+	for every block b' other than b:
+	    for each rel coordinate r0' in b':
+	        a0' <- r0' + posn of b'
+		if a0' = a0:
+		    return false
+    return true

@@ -1,5 +1,5 @@
 # "Simplicity" Solver
-Copyright © 2010 Bart Massey
+Copyright © 2012 Bart Massey
 
 ["Simplicity"](http://www.puzzlebeast.com/slidingblock/index.html)
 is a sliding-blocks puzzle by James W. Stephens.
@@ -22,3 +22,9 @@ The goal is to get the R block to the upper-left corner.
 
 A solution will be a sequence of puzzle states in the format
 shown above leading from the starting state to a goal state.
+
+The solver uses A* search, with an admissible heuristic of
+taxicab distance of the R piece from its goal position. A
+back-of-the-envelope calculation gives a strict upper bound
+of 64K for the number of possible states of this problem,\
+so almost anything works quickly.

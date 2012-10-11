@@ -1,0 +1,16 @@
+To a-star search for solution from an initial Simplicity state i:
+    L <- new empty "stop list" of visited states
+    H <- new empty min-heap
+    insert <i, 0, h(i), null> into H
+    while true:
+        if H is empty:
+	    error "unsolvable puzzle"
+        s <- dequeue min from H
+	insert s into L
+	if s is a goal state:
+	    return the reverse of the path from s to the
+	      null state following the parent links
+	for each s' resulting from a legal move on s:
+	    if s' is in L:
+	        continue
+	    insert <s', g(s) + 1, h(s'), s> into H
