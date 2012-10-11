@@ -1,5 +1,9 @@
 # "Simplicity" Solver
-Copyright © 2012 Bart Massey
+Copyright © 2012 Bart Massey and the Fall 2012 Portland State University CS 441/541 class
+
+This program is licensed under the "MIT License".
+Please see the file COPYING in the source
+distribution of this software for license terms.
 
 ["Simplicity"](http://www.puzzlebeast.com/slidingblock/index.html)
 is a sliding-blocks puzzle by James W. Stephens.
