@@ -31,8 +31,8 @@ class Block {
     char color;
     Coord[] squares;  // array of relative positions
 
-    Block(Coord pos, char color, Coord[] squares) {
-        this.pos = pos;
+    Block(char color, Coord[] squares, int r, int c) {
+        this.pos = new Coord(r, c);
         this.color = color;
         this.squares = squares;
     }
@@ -42,6 +42,10 @@ class Block {
             if (this.pos.offset(squares[i]).equals(pos))
                 return true;
         return false;
+    }
+
+    boolean squareAt(int r, int c) {
+        return squareAt(new Coord(r, c));
     }
 }
 
@@ -53,6 +57,47 @@ class Block {
  *   + Check for block collisions
  */
 class State {
-    Block[] blocks;
+    Coord[] ell = {
+        new Coord(0, 0),
+        new Coord(1, 0),
+        new Coord(1, 1) };
+    Coord[] dash = {
+        new Coord(0, 0),
+        new Coord(0, 1) };
+    Coord[] pipe = {
+        new Coord(0, 0),
+        new Coord(1, 0) };
+    Block[] blocks = {
+        new Block('R', ell, 2, 2),
+        new Block('B', dash, 1, 0),
+        new Block('G', pipe, 2, 1),
+        new Block('Y', ell, 0, 2) };
+
+    int count = 0;
+
+    void print() {
+        System.out.println("moves: " + count);
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                boolean hit1 = false;
+                for (Block b: blocks) {
+                    if (b.squareAt(r, c)) {
+                        System.out.print(b.color);
+                        hit1 = true;
+                        break;
+                    }
+                }
+                if (!hit1)
+                    System.out.print('.');
+            }
+            System.out.println();
+        }
+    }
 }
 
+public class Simplicity {
+    public static void main(String[] args) {
+        State start = new State();
+        start.print();
+    }
+}
