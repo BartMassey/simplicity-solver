@@ -38,4 +38,8 @@ class Coord {
     public int hashCode() {
         return (r << 2) | c;
     }
+
+    public String toString() {
+        return "(" + r + ", " + c + ")";
+    }
 }

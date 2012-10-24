@@ -23,6 +23,62 @@ public class Simplicity {
         s.print();
     }
 
+    static HashSet<State> children(State s, HashMap<State, State> stop) {
+        HashSet<State> cs = new HashSet<State>();
+        for (int b = 0; b < 4; b++) {
+            if (debug)
+                System.out.println("Processing block " + b);
+            HashSet<State> csb = new HashSet<State>();
+            csb.add(s);
+            while (true) {
+                HashSet<State> ncsb = new HashSet<State>();
+                for (State sp: csb) {
+                    Coord[] offsets = {
+                        new Coord(-1, 0),
+                        new Coord(0, -1),
+                        new Coord(1, 0),
+                        new Coord(0, 1) };
+                    for (Coord c: offsets) {
+                        State sc = sp.nextState(s, b, c);
+                        if (csb.contains(sc) || ncsb.contains(sc))
+                            continue;
+                        if (sc.blocks[b].clipped())
+                            continue;
+                        int d = 0;
+                        for (; d < 4; d++) {
+                            if (d == b)
+                                continue;
+                            if (sc.blocks[b].intersects(sc.blocks[d]))
+                                break;
+                        }
+                        if (d < 4)
+                            continue;
+                        if (debug)
+                            System.out.println("Adding child " + b +
+                                               " " + sc.blocks[b].pos);
+                        ncsb.add(sc);
+                    }
+                }
+                if (ncsb.isEmpty())
+                    break;
+                csb.addAll(ncsb);
+                for (State sc: ncsb) {
+                    if (debug)
+                        System.out.println("Processing child " + b +
+                                           " " + sc.blocks[b].pos);
+                    State ss = stop.get(sc);
+                    if (ss != null) {
+                        if (ss.fmoves() <= sc.fmoves())
+                            continue;
+                        stop.remove(ss);
+                    }
+                    cs.add(sc);
+                }
+            }
+        }
+        return cs;
+    }
+
     public static void main(String[] args) {
         HashMap<State, State> stop = new HashMap<State, State>();
         PriorityQueue<State> q = new PriorityQueue<State>();
@@ -52,35 +108,9 @@ public class Simplicity {
             } else if (examined % 1000 == 0) {
                 System.out.print('.');
             }
-            Coord[] offsets = {
-                new Coord(-1, 0),
-                new Coord(0, -1),
-                new Coord(1, 0),
-                new Coord(0, 1) };
-            for (int b = 0; b < 4; b++) {
-                for (Coord c : offsets) {
-                    State sc = s.nextState();
-                    sc.blocks[b].pos = sc.blocks[b].pos.offset(c);
-                    State ss = stop.get(sc);
-                    if (ss != null) {
-                        if (ss.fmoves() <= sc.fmoves())
-                            continue;
-                        stop.remove(ss);
-                    }
-                    if (sc.blocks[b].clipped())
-                        continue;
-                    int d = 0;
-                    for (; d < 4; d++) {
-                        if (d == b)
-                            continue;
-                        if (sc.blocks[b].intersects(sc.blocks[d]))
-                            break;
-                    }
-                    if (d < 4)
-                        continue;
-                    q.add(sc);
-                }
-            }
+            HashSet<State> cs = children(s, stop);
+            for (State c: cs)
+                q.add(c);
         }
         System.out.println("Puzzle has no solution.");
     }

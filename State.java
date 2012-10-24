@@ -5,19 +5,9 @@
  * distribution of this software for license terms.
  */
 
-/* Operation on State:
- *   + Display
- *   + Slide a block
- *   + Compute legal moves
- *   + Check for goal state
- *   + Check for block collisions
- */
 class State implements Comparable<State> {
-    
     Block[] blocks = null;
-
     int nmoves = 0;
-
     State parent = null;
 
     void start() {
@@ -39,13 +29,14 @@ class State implements Comparable<State> {
         blocks = startBlocks;
     }
 
-    State nextState() {
+    State nextState(State p, int b, Coord off) {
         State s = new State();
         s.blocks = new Block[4];
         for (int i = 0; i < 4; i++)
             s.blocks[i] = new Block(blocks[i]);
-        s.nmoves = nmoves + 1;
-        s.parent = this;
+        s.blocks[b].pos = s.blocks[b].pos.offset(off);
+        s.nmoves = p.nmoves + 1;
+        s.parent = p;
         return s;
     }
 
