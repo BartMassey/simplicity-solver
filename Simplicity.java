@@ -17,6 +17,11 @@ class Coord {
         this.c = c;
     }
 
+    Coord(Coord p) {
+        r = p.r;
+        c = p.c;
+    }
+
     Coord offset(Coord q) {
         return new Coord(q.r + r, q.c + c);
     }
@@ -43,6 +48,12 @@ class Block {
         this.pos = new Coord(r, c);
         this.color = color;
         this.squares = squares;
+    }
+
+    Block(Block b) {
+        pos = new Coord(b.pos);
+        color = b.color;
+        squares = b.squares;
     }
 
     boolean squareAt(Coord pos) {
@@ -85,23 +96,41 @@ class Block {
  *   + Check for block collisions
  */
 class State {
-    Coord[] ell = {
-        new Coord(0, 0),
-        new Coord(1, 0),
-        new Coord(1, 1) };
-    Coord[] dash = {
-        new Coord(0, 0),
-        new Coord(0, 1) };
-    Coord[] pipe = {
-        new Coord(0, 0),
-        new Coord(1, 0) };
-    Block[] blocks = {
-        new Block('R', ell, 2, 2),
-        new Block('B', dash, 1, 0),
-        new Block('G', pipe, 2, 1),
-        new Block('Y', ell, 0, 2) };
+    
+    Block[] blocks = null;
 
     int nmoves = 0;
+
+    State parent = null;
+
+    void start() {
+        Coord[] ell = {
+            new Coord(0, 0),
+            new Coord(1, 0),
+            new Coord(1, 1) };
+        Coord[] dash = {
+            new Coord(0, 0),
+            new Coord(0, 1) };
+        Coord[] pipe = {
+            new Coord(0, 0),
+            new Coord(1, 0) };
+        Block[] startBlocks = {
+            new Block('R', ell, 2, 2),
+            new Block('B', dash, 1, 0),
+            new Block('G', pipe, 2, 1),
+            new Block('Y', ell, 0, 2) };
+        blocks = startBlocks;
+    }
+
+    State nextState() {
+        State s = new State();
+        s.blocks = new Block[4];
+        for (int i = 0; i < 4; i++)
+            s.blocks[i] = new Block(blocks[i]);
+        s.nmoves = nmoves + 1;
+        s.parent = this;
+        return s;
+    }
 
     void print() {
         System.out.println("moves: " + nmoves);
@@ -125,12 +154,12 @@ class State {
     boolean goal() {
         return blocks[0].isAt(0, 0);
     }
-
 }
 
 public class Simplicity {
     public static void main(String[] args) {
         State start = new State();
+        start.start();
         start.print();
     }
 }
