@@ -37,6 +37,10 @@ class Coord {
     boolean clipped() {
         return r < 0 || r >= 4 || c < 0 || c >= 4;
     }
+
+    public int hashCode() {
+        return (r << 2) | c;
+    }
 }
 
 class Block {
@@ -85,6 +89,14 @@ class Block {
 
     boolean isAt(int r, int c) {
         return pos.equals(r, c);
+    }
+
+    boolean equals(Block b) {
+        return b.color == color && b.pos.equals(pos);
+    }
+
+    public int hashCode() {
+        return (pos.hashCode() << 8) | color;
     }
 }
 
@@ -153,6 +165,21 @@ class State {
 
     boolean goal() {
         return blocks[0].isAt(0, 0);
+    }
+
+    boolean equals(State s) {
+        for (int i = 0; i < 4; i++)
+            if (!blocks[i].equals(s.blocks[i]))
+                return false;
+        return true;
+    }
+
+    public int hashCode() {
+        return
+            (blocks[0].hashCode() << 20) ^
+            (blocks[1].hashCode() << 13) ^
+            (blocks[2].hashCode() << 6) ^
+            blocks[3].hashCode();
     }
 }
 
