@@ -24,6 +24,14 @@ class Coord {
     boolean equals(Coord q) {
         return q.r == r && q.c == c;
     }
+
+    boolean equals(int r, int c) {
+        return this.r == r && this.c == c;
+    }
+
+    boolean clipped() {
+        return r < 0 || r >= 4 || c < 0 || c >= 4;
+    }
 }
 
 class Block {
@@ -46,6 +54,26 @@ class Block {
 
     boolean squareAt(int r, int c) {
         return squareAt(new Coord(r, c));
+    }
+
+    boolean intersects(Block b) {
+        for (int i = 0; i < squares.length; i++)
+            if (b.squareAt(pos.offset(squares[i])))
+                return true;
+        return false;
+    }
+
+    boolean clipped() {
+        for (int i = 0; i < squares.length; i++) {
+            Coord s = pos.offset(squares[i]);
+            if (s.clipped())
+                return true;
+        }
+        return false;
+    }
+
+    boolean isAt(int r, int c) {
+        return pos.equals(r, c);
     }
 }
 
@@ -73,10 +101,10 @@ class State {
         new Block('G', pipe, 2, 1),
         new Block('Y', ell, 0, 2) };
 
-    int count = 0;
+    int nmoves = 0;
 
     void print() {
-        System.out.println("moves: " + count);
+        System.out.println("moves: " + nmoves);
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
                 boolean hit1 = false;
@@ -93,6 +121,11 @@ class State {
             System.out.println();
         }
     }
+
+    boolean goal() {
+        return blocks[0].isAt(0, 0);
+    }
+
 }
 
 public class Simplicity {
