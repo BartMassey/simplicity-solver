@@ -223,7 +223,7 @@ public class Simplicity {
     }
 
     public static void main(String[] args) {
-        HashSet<State> stop = new HashSet<State>();
+        HashMap<State, State> stop = new HashMap<State, State>();
         PriorityQueue<State> q = new PriorityQueue<State>();
 
         State start = new State();
@@ -243,7 +243,7 @@ public class Simplicity {
                 printSoln(s);
                 return;
             }
-            stop.add(s);
+            stop.put(s, s);
             if (debug) {
                 System.out.println("Examining state:");
                 s.print();
@@ -260,8 +260,12 @@ public class Simplicity {
                 for (Coord c : offsets) {
                     State sc = s.nextState();
                     sc.blocks[b].pos = sc.blocks[b].pos.offset(c);
-                    if (stop.contains(sc))
-                        continue;
+                    State ss = stop.get(sc);
+                    if (ss != null) {
+                        if (ss.fmoves() <= sc.fmoves())
+                            continue;
+                        stop.remove(ss);
+                    }
                     if (sc.blocks[b].clipped())
                         continue;
                     int d = 0;
