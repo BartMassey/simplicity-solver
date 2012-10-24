@@ -17,18 +17,23 @@ This is the starting state of Simplicity.
     .GR.
     .GRR
 
-The goal is to get the R block to the upper-left corner.
+The goal is to get the R block to the upper-left corner in
+as few moves as possible. One move is a sequence of
+horizontal and vertical steps by a single piece such that it
+does not intersect any other pieces at any point.
 
     R???
     RR??
     ????
     ????
 
-A solution will be a sequence of puzzle states in the format
-shown above leading from the starting state to a goal state.
+The solution is displayed as a sequence of puzzle states
+leading from the starting state to a goal state.
 
 The solver uses A* search, with an admissible heuristic of
-taxicab distance of the R piece from its goal position. A
-back-of-the-envelope calculation gives a strict upper bound
-of 64K for the number of possible states of this problem,\
-so almost anything works quickly.
+the number of pieces that provably have to move from their
+current position. A back-of-the-envelope calculation gives a
+strict upper bound of 64K for the number of possible states
+of this problem, so almost anything works quickly. The first
+working version of this search examines 272 states before
+finding a solution.
