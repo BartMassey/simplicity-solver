@@ -191,19 +191,68 @@ class State implements Comparable<State> {
     }
 
     public int compareTo(State s) {
-        return (nmoves + hmoves()) - (s.nmoves + s.hmoves());
+        int f = nmoves + hmoves();
+        int sf = s.nmoves + s.hmoves();
+        if (f == sf)
+            return s.nmoves - nmoves;
+        return f - sf;
     }
 }
 
 public class Simplicity {
-    HashSet<State> stopList = new HashSet<State>();
+    static void printSoln(State s) {
+        if (s == null)
+            return;
+        printSoln(s.parent);
+        System.out.println();
+        s.print();
+    }
 
     public static void main(String[] args) {
+        HashSet<State> stop = new HashSet<State>();
         PriorityQueue<State> q = new PriorityQueue<State>();
 
         State start = new State();
         start.start();
-        q.add(start);
         start.print();
+        System.out.println();
+        System.out.println("Solving...");
+        q.add(start);
+        while(true) {
+            State s = q.poll();
+            if (s == null)
+                break;
+            if (s.goal()) {
+                printSoln(s);
+                return;
+            }
+            stop.add(s);
+            Coord[] offsets = {
+                new Coord(-1, 0),
+                new Coord(0, -1),
+                new Coord(1, 0),
+                new Coord(0, 1) };
+            for (int b = 0; b < 4; b++) {
+                for (Coord c : offsets) {
+                    State sc = s.nextState();
+                    sc.blocks[b].pos = sc.blocks[b].pos.offset(c);
+                    if (sc.blocks[b].clipped())
+                        continue;
+                    int d = 0;
+                    for (; d < 4; d++) {
+                        if (d == b)
+                            continue;
+                        if (sc.blocks[b].intersects(sc.blocks[d]))
+                            break;
+                    }
+                    if (d < 4)
+                        continue;
+                    if (stop.contains(sc))
+                        continue;
+                    q.add(sc);
+                }
+            }
+        }
+        System.out.println("Puzzle has no solution.");
     }
 }
