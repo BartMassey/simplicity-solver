@@ -96,7 +96,8 @@ public class Simplicity {
             if (s == null)
                 break;
             if (s.goal()) {
-                System.out.println("Solution found");
+                System.out.println("Solution found after examining " +
+                                   examined + " states.");
                 printSoln(s);
                 return;
             }
