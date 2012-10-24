@@ -36,4 +36,6 @@ current position. A back-of-the-envelope calculation gives a
 strict upper bound of 64K for the number of possible states
 of this problem, so almost anything works quickly. The first
 working version of this search examines 272 states before
-finding a solution.
+finding a solution. By comparison, Dijkstra's Algorithm
+(achieved here by using a constant heuristic value of 0)
+examines 324 states.
