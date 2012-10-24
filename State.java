@@ -41,8 +41,7 @@ class State implements Comparable<State> {
     }
 
     void print() {
-        int f = nmoves + hmoves();
-        System.out.println("moves: " + nmoves + "   f: " + f);
+        System.out.println("moves: " + nmoves + "   h: " + hmoves());
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
                 boolean hit1 = false;
@@ -81,8 +80,23 @@ class State implements Comparable<State> {
     }
 
     public int hmoves() {
-        Coord p = blocks[0].pos;
-        return p.r + p.c;
+        int h = 0;
+        if (!blocks[0].pos.equals(0, 0))
+            h++;
+        for (int b = 1; b < 4; b++) {
+            Coord[] target = {
+                new Coord(0, 0),
+                new Coord(1, 0),
+                new Coord(1, 1)
+            };
+            for (Coord c: target) {
+                if (blocks[b].squareAt(c)) {
+                    h++;
+                    break;
+                }
+            }
+        }
+        return h;
     }
 
     public int gmoves() {
