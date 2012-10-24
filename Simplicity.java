@@ -9,6 +9,9 @@
  * "Simplicity" Solver
  */
 
+import java.lang.*;
+import java.util.*;
+
 class Coord {
     int r, c;   // row, column coordinates
 
@@ -107,7 +110,7 @@ class Block {
  *   + Check for goal state
  *   + Check for block collisions
  */
-class State {
+class State implements Comparable<State> {
     
     Block[] blocks = null;
 
@@ -181,12 +184,26 @@ class State {
             (blocks[2].hashCode() << 6) ^
             blocks[3].hashCode();
     }
+
+    public int hmoves() {
+        Coord p = blocks[0].pos;
+        return p.r + p.c;
+    }
+
+    public int compareTo(State s) {
+        return (nmoves + hmoves()) - (s.nmoves + s.hmoves());
+    }
 }
 
 public class Simplicity {
+    HashSet<State> stopList = new HashSet<State>();
+
     public static void main(String[] args) {
+        PriorityQueue<State> q = new PriorityQueue<State>();
+
         State start = new State();
         start.start();
+        q.add(start);
         start.print();
     }
 }
