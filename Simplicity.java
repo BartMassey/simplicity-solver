@@ -29,7 +29,8 @@ class Coord {
         return new Coord(q.r + r, q.c + c);
     }
 
-    boolean equals(Coord q) {
+    public boolean equals(Object o) {
+        Coord q = (Coord)o;
         return q.r == r && q.c == c;
     }
 
@@ -94,7 +95,8 @@ class Block {
         return pos.equals(r, c);
     }
 
-    boolean equals(Block b) {
+    public boolean equals(Object o) {
+        Block b = (Block)o;
         return b.color == color && b.pos.equals(pos);
     }
 
@@ -148,7 +150,8 @@ class State implements Comparable<State> {
     }
 
     void print() {
-        System.out.println("moves: " + nmoves);
+        int f = nmoves + hmoves();
+        System.out.println("moves: " + nmoves + "   f: " + f);
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
                 boolean hit1 = false;
@@ -170,7 +173,8 @@ class State implements Comparable<State> {
         return blocks[0].isAt(0, 0);
     }
 
-    boolean equals(State s) {
+    public boolean equals(Object o) {
+        State s = (State) o;
         for (int i = 0; i < 4; i++)
             if (!blocks[i].equals(s.blocks[i]))
                 return false;
@@ -190,16 +194,26 @@ class State implements Comparable<State> {
         return p.r + p.c;
     }
 
+    public int gmoves() {
+        return nmoves;
+    }
+
+    public int fmoves() {
+        return gmoves() + hmoves();
+    }
+
     public int compareTo(State s) {
-        int f = nmoves + hmoves();
-        int sf = s.nmoves + s.hmoves();
+        int f = fmoves();
+        int sf = s.fmoves();
         if (f == sf)
-            return s.nmoves - nmoves;
+            return s.gmoves() - gmoves();
         return f - sf;
     }
 }
 
 public class Simplicity {
+    private static final boolean debug = false;
+
     static void printSoln(State s) {
         if (s == null)
             return;
@@ -218,15 +232,25 @@ public class Simplicity {
         System.out.println();
         System.out.println("Solving...");
         q.add(start);
+        int examined = 0;
         while(true) {
             State s = q.poll();
+            examined++;
             if (s == null)
                 break;
             if (s.goal()) {
+                System.out.println("Solution found");
                 printSoln(s);
                 return;
             }
             stop.add(s);
+            if (debug) {
+                System.out.println("Examining state:");
+                s.print();
+                System.out.println();
+            } else if (examined % 1000 == 0) {
+                System.out.print('.');
+            }
             Coord[] offsets = {
                 new Coord(-1, 0),
                 new Coord(0, -1),
@@ -236,6 +260,8 @@ public class Simplicity {
                 for (Coord c : offsets) {
                     State sc = s.nextState();
                     sc.blocks[b].pos = sc.blocks[b].pos.offset(c);
+                    if (stop.contains(sc))
+                        continue;
                     if (sc.blocks[b].clipped())
                         continue;
                     int d = 0;
@@ -246,8 +272,6 @@ public class Simplicity {
                             break;
                     }
                     if (d < 4)
-                        continue;
-                    if (stop.contains(sc))
                         continue;
                     q.add(sc);
                 }
